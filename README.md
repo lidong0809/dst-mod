@@ -1,27 +1,11 @@
-# Wurt: Friendly Marsh Life
+# DST Mods
 
-A Don't Starve Together server mod for Wurt QoL/balance tweaks.
+A collection of Don't Starve Together mods.
 
-## Features
+## Mods
 
-- Wurt can trade normal tradable items with the Pig King.
-- Pigmen and pig guards are neutral to Wurt unless she attacks them first.
-- The Merm King stays fed and should not lose level from hunger.
-- Wurt will not freeze from wetness.
-- Snow counts like the same wet-cold protection for Wurt, but does not raise her wetness meter.
+- [Wurt: Friendly Marsh Life](./wurt-friendly-marsh-life) - Server-side QoL tweaks for Wurt.
 
-## Install Locally
+## Publishing
 
-Copy this folder into your DST mods folder, for example:
-
-```text
-C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together\mods\wurt_friendly_marsh_life
-```
-
-Then enable it under **Server Mods** when creating or editing a world.
-
-## Notes
-
-- This is a server-only mod.
-- Existing worlds should be fine, but always back up a world before testing gameplay mods.
-- If another mod fully replaces Pig King, pigman, Merm King, or Wurt prefab logic, load order may matter.
+Each subfolder is intended to be copied or uploaded as its own DST mod folder.
