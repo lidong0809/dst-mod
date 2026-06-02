@@ -10,6 +10,7 @@ local ENABLE_WET_SNOW_COLD_PROTECTION = GetModConfigData("wet_snow_cold_protecti
 
 local WURT_FREEZE_FLOOR = 1
 local PIG_RETALIATE_WINDOW = 8
+local MERMKING_HUNGER_RATE_MULTIPLIER = 0.2
 
 local function IsMasterSim()
   return _G.TheWorld ~= nil and _G.TheWorld.ismastersim
@@ -107,26 +108,26 @@ local function MakePigNeutralToWurt(inst)
   end)
 end
 
-local function KeepMermKingFed(inst)
+local function SlowMermKingHunger(inst)
   if not IsMasterSim() then
     return
   end
 
-  local function feed(king)
+  local function slow_hunger(king)
     local hunger = king.components ~= nil and king.components.hunger or nil
-    if hunger == nil then
+    if hunger == nil or hunger.SetRate == nil then
       return
     end
-    if hunger.SetRate ~= nil then
-      hunger:SetRate(0)
+
+    if king._wurt_friendly_marsh_life_original_hunger_rate == nil then
+      king._wurt_friendly_marsh_life_original_hunger_rate = hunger.hungerrate or 0
     end
-    if hunger.SetPercent ~= nil then
-      hunger:SetPercent(1)
-    end
+
+    hunger:SetRate(king._wurt_friendly_marsh_life_original_hunger_rate * MERMKING_HUNGER_RATE_MULTIPLIER)
   end
 
-  inst:DoTaskInTime(0, feed)
-  inst:DoPeriodicTask(10, feed)
+  inst:DoTaskInTime(0, slow_hunger)
+  inst:DoPeriodicTask(10, slow_hunger)
 end
 
 local function IsWurtWetOrSnowing(inst)
@@ -173,7 +174,7 @@ if ENABLE_PIG_NEUTRAL then
 end
 
 if ENABLE_MERMKING_NO_HUNGER then
-  AddPrefabPostInit("mermking", KeepMermKingFed)
+  AddPrefabPostInit("mermking", SlowMermKingHunger)
 end
 
 if ENABLE_WET_SNOW_COLD_PROTECTION then

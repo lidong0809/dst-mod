@@ -6,7 +6,7 @@ A Don't Starve Together server mod for Wurt QoL/balance tweaks.
 
 - Wurt can trade normal tradable items with the Pig King.
 - Pigmen and pig guards are neutral to Wurt unless she attacks them first.
-- The Merm King stays fed and should not lose level from hunger.
+- The Merm King's hunger drains at one fifth of the original speed.
 - Wurt will not freeze from wetness.
 - Snow counts like the same wet-cold protection for Wurt, but does not raise her wetness meter.
 

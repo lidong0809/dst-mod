@@ -1,5 +1,5 @@
 name = "Wurt: Friendly Marsh Life"
-description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, immortal Merm King hunger, and wet/snow cold protection."
+description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, slower Merm King hunger, and wet/snow cold protection."
 author = "Codex"
 version = "1.0.0"
 
@@ -43,8 +43,8 @@ configuration_options = {
   },
   {
     name = "mermking_no_hunger_loss",
-    label = "Merm King never starves",
-    hover = "Keeps the Merm King fed so he will not lose level from hunger.",
+    label = "Merm King hunger 1/5 speed",
+    hover = "Reduces the Merm King's hunger drain to one fifth of the original speed.",
     options = {
       { description = "Enabled", data = true },
       { description = "Disabled", data = false },
