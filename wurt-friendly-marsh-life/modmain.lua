@@ -8,7 +8,6 @@ local ENABLE_PIG_NEUTRAL = GetModConfigData("pig_neutral")
 local ENABLE_MERMKING_NO_HUNGER = GetModConfigData("mermking_no_hunger_loss")
 local ENABLE_WET_SNOW_COLD_PROTECTION = GetModConfigData("wet_snow_cold_protection")
 
-local WURT_FREEZE_FLOOR = 1
 local PIG_RETALIATE_WINDOW = 8
 local MERMKING_HUNGER_RATE_MULTIPLIER = 0.2
 
@@ -130,37 +129,27 @@ local function SlowMermKingHunger(inst)
   inst:DoPeriodicTask(10, slow_hunger)
 end
 
-local function IsWurtWetOrSnowing(inst)
-  local moisture = inst.components ~= nil and inst.components.moisture or nil
-  local wet = moisture ~= nil and moisture.GetMoisture ~= nil and moisture:GetMoisture() > 0
-  local snowing = _G.TheWorld ~= nil and _G.TheWorld.state ~= nil and _G.TheWorld.state.issnowing
-  return wet or snowing
-end
-
-local function ProtectWurtFromWetCold(inst)
+local function RemoveWurtWetnessColdPenalty(inst)
   if not IsMasterSim() then
     return
   end
 
-  local function update(player)
-    if not IsWurtWetOrSnowing(player) then
-      return
-    end
-
+  inst:DoTaskInTime(0, function(player)
     local temperature = player.components ~= nil and player.components.temperature or nil
-    if temperature == nil or temperature.GetCurrent == nil or temperature.SetTemperature == nil then
+    if temperature == nil or temperature.GetMoisturePenalty == nil or temperature._wurt_friendly_marsh_life_wrapped then
       return
     end
 
-    local current = temperature:GetCurrent()
-    if current ~= nil and current < WURT_FREEZE_FLOOR then
-      temperature:SetTemperature(WURT_FREEZE_FLOOR)
-    end
-  end
+    local old_get_moisture_penalty = temperature.GetMoisturePenalty
+    temperature._wurt_friendly_marsh_life_wrapped = true
 
-  inst:DoPeriodicTask(1, update)
-  inst:WatchWorldState("issnowing", function(player)
-    update(player)
+    temperature.GetMoisturePenalty = function(self, ...)
+      if IsWurt(self.inst) then
+        return 0
+      end
+
+      return old_get_moisture_penalty(self, ...)
+    end
   end)
 end
 
@@ -178,5 +167,5 @@ if ENABLE_MERMKING_NO_HUNGER then
 end
 
 if ENABLE_WET_SNOW_COLD_PROTECTION then
-  AddPrefabPostInit("wurt", ProtectWurtFromWetCold)
+  AddPrefabPostInit("wurt", RemoveWurtWetnessColdPenalty)
 end

@@ -1,7 +1,7 @@
 name = "Wurt: Friendly Marsh Life"
-description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, slower Merm King hunger, and wet/snow cold protection."
+description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, slower Merm King hunger, and wetness cold protection."
 author = "Codex"
-version = "1.0.1"
+version = "1.0.2"
 
 forumthread = ""
 api_version = 10
@@ -53,8 +53,8 @@ configuration_options = {
   },
   {
     name = "wet_snow_cold_protection",
-    label = "Wet/snow cold protection",
-    hover = "Wurt will not freeze from wetness; snow counts as the same protection without raising wetness.",
+    label = "Wetness cold penalty protection",
+    hover = "Removes Wurt's wetness temperature penalty without blocking normal winter cold.",
     options = {
       { description = "Enabled", data = true },
       { description = "Disabled", data = false },
