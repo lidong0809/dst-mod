@@ -1,7 +1,7 @@
 name = "Wurt: Friendly Marsh Life"
-description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, slower Merm King hunger, and wetness cold protection."
+description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, Wormwood-friendly merms, slower Merm King hunger, and wetness cold protection."
 author = "Codex"
-version = "1.0.2"
+version = "1.0.3"
 
 forumthread = ""
 api_version = 10
@@ -55,6 +55,16 @@ configuration_options = {
     name = "wet_snow_cold_protection",
     label = "Wetness cold penalty protection",
     hover = "Removes Wurt's wetness temperature penalty without blocking normal winter cold.",
+    options = {
+      { description = "Enabled", data = true },
+      { description = "Disabled", data = false },
+    },
+    default = true,
+  },
+  {
+    name = "merm_neutral_to_wormwood",
+    label = "Merms are neutral to Wormwood",
+    hover = "Merms and merm guards will not target Wormwood unless he attacks.",
     options = {
       { description = "Enabled", data = true },
       { description = "Disabled", data = false },

@@ -7,8 +7,10 @@ local ENABLE_PIG_KING_TRADE = GetModConfigData("pig_king_trade")
 local ENABLE_PIG_NEUTRAL = GetModConfigData("pig_neutral")
 local ENABLE_MERMKING_NO_HUNGER = GetModConfigData("mermking_no_hunger_loss")
 local ENABLE_WET_SNOW_COLD_PROTECTION = GetModConfigData("wet_snow_cold_protection")
+local ENABLE_MERM_NEUTRAL_TO_WORMWOOD = GetModConfigData("merm_neutral_to_wormwood")
 
 local PIG_RETALIATE_WINDOW = 8
+local MERM_RETALIATE_WINDOW = 8
 local MERMKING_HUNGER_RATE_MULTIPLIER = 0.2
 
 local function IsMasterSim()
@@ -17,6 +19,10 @@ end
 
 local function IsWurt(inst)
   return inst ~= nil and inst.prefab == "wurt"
+end
+
+local function IsWormwood(inst)
+  return inst ~= nil and inst.prefab == "wormwood"
 end
 
 local function SafeGetTime()
@@ -107,6 +113,39 @@ local function MakePigNeutralToWurt(inst)
   end)
 end
 
+local function MakeMermNeutralToWormwood(inst)
+  if not IsMasterSim() then
+    return
+  end
+
+  inst:ListenForEvent("attacked", function(inst, data)
+    if IsWormwood(data ~= nil and data.attacker or nil) then
+      inst._wurt_friendly_marsh_life_wormwood_retaliate_until = SafeGetTime() + MERM_RETALIATE_WINDOW
+    end
+  end)
+
+  inst:DoTaskInTime(0, function(inst)
+    local combat = inst.components ~= nil and inst.components.combat or nil
+    if combat == nil or combat.targetfn == nil or combat._wurt_friendly_marsh_life_wormwood_wrapped then
+      return
+    end
+
+    local old_targetfn = combat.targetfn
+    combat._wurt_friendly_marsh_life_wormwood_wrapped = true
+
+    combat.targetfn = function(inst, ...)
+      local target = old_targetfn(inst, ...)
+      if IsWormwood(target) then
+        local retaliate_until = inst._wurt_friendly_marsh_life_wormwood_retaliate_until or 0
+        if SafeGetTime() > retaliate_until then
+          return nil
+        end
+      end
+      return target
+    end
+  end)
+end
+
 local function SlowMermKingHunger(inst)
   if not IsMasterSim() then
     return
@@ -168,4 +207,9 @@ end
 
 if ENABLE_WET_SNOW_COLD_PROTECTION then
   AddPrefabPostInit("wurt", RemoveWurtWetnessColdPenalty)
+end
+
+if ENABLE_MERM_NEUTRAL_TO_WORMWOOD then
+  AddPrefabPostInit("merm", MakeMermNeutralToWormwood)
+  AddPrefabPostInit("mermguard", MakeMermNeutralToWormwood)
 end
