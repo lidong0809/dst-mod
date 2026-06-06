@@ -1,7 +1,7 @@
 name = "Wurt: Friendly Marsh Life"
 description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, Wormwood-friendly merms, longer Merm loyalty, merm dismiss command, Chester-safe merms, slower Merm King hunger, and wetness cold protection."
 author = "Codex"
-version = "1.0.4"
+version = "1.0.5"
 
 forumthread = ""
 api_version = 10
