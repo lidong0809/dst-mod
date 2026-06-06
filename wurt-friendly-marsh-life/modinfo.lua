@@ -86,7 +86,7 @@ configuration_options = {
   {
     name = "dismiss_merms_command",
     label = "Dismiss Merms command",
-    hover = "Adds /dismissmerms to immediately dismiss your recruited Merm followers.",
+    hover = "Adds #dismissmerms chat command to immediately dismiss your recruited Merm followers.",
     options = {
       { description = "Enabled", data = true },
       { description = "Disabled", data = false },

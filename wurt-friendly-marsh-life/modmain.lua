@@ -2,7 +2,6 @@ local _G = GLOBAL
 
 local GetModConfigData = GetModConfigData
 local AddPrefabPostInit = AddPrefabPostInit
-local AddUserCommand = AddUserCommand
 
 local ENABLE_PIG_KING_TRADE = GetModConfigData("pig_king_trade")
 local ENABLE_PIG_NEUTRAL = GetModConfigData("pig_neutral")
@@ -235,22 +234,33 @@ local function DismissCallerMerms(caller)
   return #followers_to_dismiss
 end
 
+local function GetChatSender(guid, userid)
+  if guid ~= nil and _G.Ents ~= nil and _G.Ents[guid] ~= nil then
+    return _G.Ents[guid]
+  end
+
+  if userid ~= nil and _G.UserToPlayer ~= nil then
+    return _G.UserToPlayer(userid)
+  end
+
+  return nil
+end
+
 local function RegisterDismissMermsCommand()
-  if AddUserCommand == nil or _G.COMMAND_PERMISSION == nil then
+  if _G.Networking_Say == nil then
     return
   end
 
-  AddUserCommand("dismissmerms", {
-    prettyname = "Dismiss Merms",
-    desc = "Dismiss your recruited merm followers.",
-    permission = _G.COMMAND_PERMISSION.USER,
-    slash = true,
-    params = {},
-    vote = false,
-    serverfn = function(params, caller)
+  local old_networking_say = _G.Networking_Say
+  _G.Networking_Say = function(guid, userid, name, prefab, message, colour, whisper, ...)
+    if message == "#dismissmerms" or message == "/dismissmerms" then
+      local caller = GetChatSender(guid, userid)
       DismissCallerMerms(caller)
-    end,
-  })
+      return
+    end
+
+    return old_networking_say(guid, userid, name, prefab, message, colour, whisper, ...)
+  end
 end
 
 local function SlowMermKingHunger(inst)

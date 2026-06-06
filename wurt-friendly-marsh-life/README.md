@@ -9,7 +9,7 @@ A Don't Starve Together server mod for Wurt QoL/balance tweaks.
 - Merms and merm guards are neutral to Wormwood unless he attacks them first.
 - Merms and merm guards will not target Chester.
 - Merm recruitment loyalty can last longer, configurable from original duration up to five times longer.
-- Use `/dismissmerms` to immediately dismiss your recruited merm followers.
+- Use `#dismissmerms` in chat to immediately dismiss your recruited merm followers.
 - The Merm King's hunger drains at one fifth of the original speed.
 - Wurt ignores the wetness cold penalty, but normal winter cold still applies.
 

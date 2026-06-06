@@ -5,12 +5,12 @@ $modmain = Get-Content -Raw -Path (Join-Path $root 'wurt-friendly-marsh-life\mod
 $modinfo = Get-Content -Raw -Path (Join-Path $root 'wurt-friendly-marsh-life\modinfo.lua')
 $readme = Get-Content -Raw -Path (Join-Path $root 'wurt-friendly-marsh-life\README.md')
 
-if ($modmain -notmatch 'AddUserCommand') {
-  throw 'modmain.lua should register a user command.'
+if ($modmain -notmatch 'Networking_Say') {
+  throw 'modmain.lua should intercept server chat messages for server-only dismiss support.'
 }
 
-if ($modmain -notmatch 'dismissmerms') {
-  throw 'modmain.lua should register /dismissmerms.'
+if ($modmain -notmatch '#dismissmerms') {
+  throw 'modmain.lua should support #dismissmerms as a normal chat command.'
 }
 
 if ($modmain -notmatch 'function DismissCallerMerms') {
@@ -25,14 +25,14 @@ if ($modmain -notmatch 'RemoveFollower' -or $modmain -notmatch 'SetLeader\(nil\)
   throw 'dismiss command should remove merm followers from the caller.'
 }
 
-if ($modmain -notmatch 'permission = _G\.COMMAND_PERMISSION\.USER') {
-  throw 'dismiss command should be usable by normal players.'
+if ($modmain -notmatch 'UserToPlayer' -or $modmain -notmatch '_G\.Ents\[guid\]') {
+  throw 'dismiss command should resolve the chat sender on the server.'
 }
 
 if ($modinfo -notmatch 'dismiss_merms_command') {
   throw 'modinfo.lua should expose a config toggle for the dismiss command.'
 }
 
-if ($readme -notmatch '/dismissmerms') {
+if ($readme -notmatch '#dismissmerms') {
   throw 'README should document the dismiss command.'
 }
