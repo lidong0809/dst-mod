@@ -1,7 +1,7 @@
 name = "Wurt: Friendly Marsh Life"
-description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, Wormwood-friendly merms, slower Merm King hunger, and wetness cold protection."
+description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, Wormwood-friendly merms, longer Merm loyalty, merm dismiss command, Chester-safe merms, slower Merm King hunger, and wetness cold protection."
 author = "Codex"
-version = "1.0.3"
+version = "1.0.4"
 
 forumthread = ""
 api_version = 10
@@ -65,6 +65,38 @@ configuration_options = {
     name = "merm_neutral_to_wormwood",
     label = "Merms are neutral to Wormwood",
     hover = "Merms and merm guards will not target Wormwood unless he attacks.",
+    options = {
+      { description = "Enabled", data = true },
+      { description = "Disabled", data = false },
+    },
+    default = true,
+  },
+  {
+    name = "merm_loyalty_multiplier",
+    label = "Merm recruitment duration",
+    hover = "Multiplies recruited Merm loyalty time and maximum follow time.",
+    options = {
+      { description = "Original", data = 1 },
+      { description = "2x", data = 2 },
+      { description = "3x", data = 3 },
+      { description = "5x", data = 5 },
+    },
+    default = 2,
+  },
+  {
+    name = "dismiss_merms_command",
+    label = "Dismiss Merms command",
+    hover = "Adds /dismissmerms to immediately dismiss your recruited Merm followers.",
+    options = {
+      { description = "Enabled", data = true },
+      { description = "Disabled", data = false },
+    },
+    default = true,
+  },
+  {
+    name = "merm_ignore_chester",
+    label = "Merms ignore Chester",
+    hover = "Merms and merm guards will not target Chester.",
     options = {
       { description = "Enabled", data = true },
       { description = "Disabled", data = false },

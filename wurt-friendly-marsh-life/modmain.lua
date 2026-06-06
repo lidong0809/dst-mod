@@ -2,12 +2,16 @@ local _G = GLOBAL
 
 local GetModConfigData = GetModConfigData
 local AddPrefabPostInit = AddPrefabPostInit
+local AddUserCommand = AddUserCommand
 
 local ENABLE_PIG_KING_TRADE = GetModConfigData("pig_king_trade")
 local ENABLE_PIG_NEUTRAL = GetModConfigData("pig_neutral")
 local ENABLE_MERMKING_NO_HUNGER = GetModConfigData("mermking_no_hunger_loss")
 local ENABLE_WET_SNOW_COLD_PROTECTION = GetModConfigData("wet_snow_cold_protection")
 local ENABLE_MERM_NEUTRAL_TO_WORMWOOD = GetModConfigData("merm_neutral_to_wormwood")
+local ENABLE_DISMISS_MERMS_COMMAND = GetModConfigData("dismiss_merms_command")
+local ENABLE_MERM_IGNORE_CHESTER = GetModConfigData("merm_ignore_chester")
+local MERM_LOYALTY_MULTIPLIER = GetModConfigData("merm_loyalty_multiplier") or 1
 
 local PIG_RETALIATE_WINDOW = 8
 local MERM_RETALIATE_WINDOW = 8
@@ -23,6 +27,14 @@ end
 
 local function IsWormwood(inst)
   return inst ~= nil and inst.prefab == "wormwood"
+end
+
+local function IsChester(inst)
+  return inst ~= nil and inst.prefab == "chester"
+end
+
+local function IsRecruitableMerm(inst)
+  return inst ~= nil and (inst.prefab == "merm" or inst.prefab == "mermguard")
 end
 
 local function SafeGetTime()
@@ -146,6 +158,101 @@ local function MakeMermNeutralToWormwood(inst)
   end)
 end
 
+local function MakeMermIgnoreChester(inst)
+  if not IsMasterSim() then
+    return
+  end
+
+  inst:DoTaskInTime(0, function(inst)
+    local combat = inst.components ~= nil and inst.components.combat or nil
+    if combat == nil or combat.targetfn == nil or combat._wurt_friendly_marsh_life_chester_wrapped then
+      return
+    end
+
+    local old_targetfn = combat.targetfn
+    combat._wurt_friendly_marsh_life_chester_wrapped = true
+
+    combat.targetfn = function(inst, ...)
+      local target = old_targetfn(inst, ...)
+      if IsChester(target) then
+        return nil
+      end
+      return target
+    end
+  end)
+end
+
+local function ExtendMermLoyalty(inst)
+  if not IsMasterSim() or MERM_LOYALTY_MULTIPLIER <= 1 then
+    return
+  end
+
+  inst:DoTaskInTime(0, function(inst)
+    local follower = inst.components ~= nil and inst.components.follower or nil
+    if follower == nil or follower.AddLoyaltyTime == nil or follower._wurt_friendly_marsh_life_loyalty_wrapped then
+      return
+    end
+
+    if follower.maxfollowtime ~= nil then
+      follower._wurt_friendly_marsh_life_original_maxfollowtime = follower.maxfollowtime
+      follower.maxfollowtime = follower.maxfollowtime * MERM_LOYALTY_MULTIPLIER
+    end
+
+    local old_add_loyalty_time = follower.AddLoyaltyTime
+    follower._wurt_friendly_marsh_life_loyalty_wrapped = true
+
+    follower.AddLoyaltyTime = function(self, time, ...)
+      return old_add_loyalty_time(self, time * MERM_LOYALTY_MULTIPLIER, ...)
+    end
+  end)
+end
+
+local function DismissCallerMerms(caller)
+  local leader = caller ~= nil and caller.components ~= nil and caller.components.leader or nil
+  if leader == nil or leader.followers == nil then
+    return 0
+  end
+
+  local followers_to_dismiss = {}
+  for follower in pairs(caller.components.leader.followers) do
+    if IsRecruitableMerm(follower) then
+      table.insert(followers_to_dismiss, follower)
+    end
+  end
+
+  for _, follower in ipairs(followers_to_dismiss) do
+    if leader.RemoveFollower ~= nil then
+      leader:RemoveFollower(follower)
+    end
+    if follower.components ~= nil and follower.components.follower ~= nil and follower.components.follower.SetLeader ~= nil then
+      follower.components.follower:SetLeader(nil)
+    end
+    if follower.components ~= nil and follower.components.combat ~= nil then
+      follower.components.combat:SetTarget(nil)
+    end
+  end
+
+  return #followers_to_dismiss
+end
+
+local function RegisterDismissMermsCommand()
+  if AddUserCommand == nil or _G.COMMAND_PERMISSION == nil then
+    return
+  end
+
+  AddUserCommand("dismissmerms", {
+    prettyname = "Dismiss Merms",
+    desc = "Dismiss your recruited merm followers.",
+    permission = _G.COMMAND_PERMISSION.USER,
+    slash = true,
+    params = {},
+    vote = false,
+    serverfn = function(params, caller)
+      DismissCallerMerms(caller)
+    end,
+  })
+end
+
 local function SlowMermKingHunger(inst)
   if not IsMasterSim() then
     return
@@ -212,4 +319,18 @@ end
 if ENABLE_MERM_NEUTRAL_TO_WORMWOOD then
   AddPrefabPostInit("merm", MakeMermNeutralToWormwood)
   AddPrefabPostInit("mermguard", MakeMermNeutralToWormwood)
+end
+
+if ENABLE_MERM_IGNORE_CHESTER then
+  AddPrefabPostInit("merm", MakeMermIgnoreChester)
+  AddPrefabPostInit("mermguard", MakeMermIgnoreChester)
+end
+
+if MERM_LOYALTY_MULTIPLIER > 1 then
+  AddPrefabPostInit("merm", ExtendMermLoyalty)
+  AddPrefabPostInit("mermguard", ExtendMermLoyalty)
+end
+
+if ENABLE_DISMISS_MERMS_COMMAND then
+  RegisterDismissMermsCommand()
 end
