@@ -1,7 +1,7 @@
 name = "Wurt: Friendly Marsh Life"
-description = "QoL tweaks for Wurt: Pig King trading, neutral pigs, Wormwood-friendly merms, longer Merm loyalty, merm dismiss command, Chester-safe merms, slower Merm King hunger, and wetness cold protection."
+description = "QoL tweaks for Wurt: neutral pigs, Wormwood-friendly merms, longer Merm loyalty, merm dismiss command, Chester-safe merms, slower Merm King hunger, and wetness cold protection."
 author = "Codex"
-version = "1.0.5"
+version = "1.0.6"
 
 forumthread = ""
 api_version = 10
@@ -21,16 +21,6 @@ icon_atlas = ""
 icon = ""
 
 configuration_options = {
-  {
-    name = "pig_king_trade",
-    label = "Wurt can trade with Pig King",
-    hover = "Allows Wurt to trade normal Pig King items.",
-    options = {
-      { description = "Enabled", data = true },
-      { description = "Disabled", data = false },
-    },
-    default = true,
-  },
   {
     name = "pig_neutral",
     label = "Pigs are neutral to Wurt",

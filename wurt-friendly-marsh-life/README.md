@@ -4,7 +4,6 @@ A Don't Starve Together server mod for Wurt QoL/balance tweaks.
 
 ## Features
 
-- Wurt can trade normal tradable items with the Pig King.
 - Pigmen and pig guards are neutral to Wurt unless she attacks them first.
 - Merms and merm guards are neutral to Wormwood unless he attacks them first.
 - Merms and merm guards will not target Chester.
@@ -27,4 +26,4 @@ Then enable it under **Server Mods** when creating or editing a world.
 
 - This is a server-only mod.
 - Existing worlds should be fine, but always back up a world before testing gameplay mods.
-- If another mod fully replaces Pig King, pigman, Merm King, or Wurt prefab logic, load order may matter.
+- If another mod fully replaces pigman, Merm, Merm King, Chester, or Wurt prefab logic, load order may matter.

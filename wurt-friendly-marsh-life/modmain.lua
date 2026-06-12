@@ -3,7 +3,6 @@ local _G = GLOBAL
 local GetModConfigData = GetModConfigData
 local AddPrefabPostInit = AddPrefabPostInit
 
-local ENABLE_PIG_KING_TRADE = GetModConfigData("pig_king_trade")
 local ENABLE_PIG_NEUTRAL = GetModConfigData("pig_neutral")
 local ENABLE_MERMKING_NO_HUNGER = GetModConfigData("mermking_no_hunger_loss")
 local ENABLE_WET_SNOW_COLD_PROTECTION = GetModConfigData("wet_snow_cold_protection")
@@ -38,57 +37,6 @@ end
 
 local function SafeGetTime()
   return _G.GetTime ~= nil and _G.GetTime() or 0
-end
-
-local function CallWithTagsTemporarilyRemoved(inst, tags, fn)
-  if inst == nil then
-    return fn()
-  end
-
-  local removed = {}
-  for _, tag in ipairs(tags) do
-    if inst:HasTag(tag) then
-      inst:RemoveTag(tag)
-      table.insert(removed, tag)
-    end
-  end
-
-  local ok, result = pcall(fn)
-
-  for _, tag in ipairs(removed) do
-    inst:AddTag(tag)
-  end
-
-  if not ok then
-    error(result)
-  end
-  return result
-end
-
-local function MakePigKingAcceptWurtTrades(inst)
-  if not IsMasterSim() then
-    return
-  end
-
-  inst:DoTaskInTime(0, function(inst)
-    local trader = inst.components ~= nil and inst.components.trader or nil
-    if trader == nil or trader._wurt_friendly_marsh_life_wrapped then
-      return
-    end
-
-    local old_test = trader.test
-    trader._wurt_friendly_marsh_life_wrapped = true
-
-    trader:SetAcceptTest(function(inst, item, giver)
-      if IsWurt(giver) then
-        return CallWithTagsTemporarilyRemoved(giver, { "monster", "merm" }, function()
-          return old_test == nil or old_test(inst, item, giver)
-        end)
-      end
-
-      return old_test == nil or old_test(inst, item, giver)
-    end)
-  end)
 end
 
 local function MakePigNeutralToWurt(inst)
@@ -307,10 +255,6 @@ local function RemoveWurtWetnessColdPenalty(inst)
       return old_get_moisture_penalty(self, ...)
     end
   end)
-end
-
-if ENABLE_PIG_KING_TRADE then
-  AddPrefabPostInit("pigking", MakePigKingAcceptWurtTrades)
 end
 
 if ENABLE_PIG_NEUTRAL then
